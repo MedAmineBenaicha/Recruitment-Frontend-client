@@ -33,6 +33,14 @@ export default createStore({
      *  Categories
      */
     categories: [],
+    /**
+     *  Contracts
+     */
+     contracts_type: [],
+      /**
+       *  Front end counter
+       */
+    counter: 1,
   },
   plugins: [vuexLocal.plugin],
   mutations: {
@@ -61,7 +69,10 @@ export default createStore({
     },
     SAVE_CATEGORIES(state,payload){
       state.categories = payload;
-    }
+    },
+    SAVE_CONTRACTS_TYPE(state,payload){
+      state.contracts_type = payload;
+    },
   },
   actions: {
     /**
@@ -209,6 +220,26 @@ export default createStore({
           });
       });
     },
+    /**
+   *  Load Contracts types From Api
+   */
+  loadContractsType({ commit, getters }) {
+    return new Promise((resolve, reject) => {
+      axios.defaults.headers.common["Accept"] = "application/json";
+      axios.defaults.headers.common["Authorization"] =
+        "Bearer " + getters.getToken;
+      axios
+        .get("http://localhost:8000/api/contractstype")
+        .then((result) => {
+          resolve(result);
+          commit("SAVE_CONTRACTS_TYPE", result.data);
+        })
+        .catch((error) => {
+          reject(error);
+          console.log(error.message);
+        });
+    });
+  },
     updateClient({ dispatch, getters }, payload) {
       console.log("actioooons");
       return new Promise((resolve, reject) => {
@@ -272,6 +303,25 @@ export default createStore({
       });
     },
 
+    // Create new Contract
+    setContract({ getters }, payload) {
+      return new Promise((resolve, reject) => {
+        axios.defaults.headers.common["Accept"] = "application/json";
+        axios.defaults.headers.common["Authorization"] =
+          "Bearer " + getters.getToken;
+        axios
+          .post("http://localhost:8000/api/contracts", payload)
+          .then((response) => {
+            console.log("Im here");
+            resolve(response);
+          })
+          .catch((error) => {
+            console.log("contract error : " + error.response);
+            reject(error);
+          });
+      });
+    },
+
     // update client image
     updateClientImage({ getters }, payload) {
       return new Promise((resolve, reject) => {
@@ -317,6 +367,13 @@ export default createStore({
     getCategories(state) {
       return state.categories;
     },
+    getContractsType(state){
+      return state.contracts_type;
+    },
+    getCounter(state){
+      return state.counter;
+    }
   },
+
   modules: {},
 });

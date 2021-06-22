@@ -1,13 +1,24 @@
 <template>
-  <section class="pb-5">
+  <!-- high sizes -->
+  <section class="pb-5 d-none d-md-block">
     <div class="container pt-5">
       <div class="profile pt-5">
-        <h2 class="text-left title mb-5 px-5">
+        <h2 class="text-left title mb-5 px-5 float-left">
           <span class="icon" @click="goBack"
             ><i class="fas fa-arrow-left mr-2"></i
           ></span>
           Candidate
         </h2>
+        <!-- Button make a contract -->
+        <div class="float-right pr-4">
+          <button
+            class="btn btn-success btn-hire"
+            @click.prevent="makeContract"
+          >
+            Make a contract
+          </button>
+        </div>
+        <div class="clear"></div>
         <!-- loading spinner -->
         <div class="text-center py-3" v-if="isLoading">
           <clip-loader
@@ -35,7 +46,7 @@
             </div>
             <div class="candidate-description pl-5 px-5">
               <h4 class="name">
-                {{ candidate.first_name + " " + candidate.last_name }}
+                {{ candidate.label }}
               </h4>
               <ul class="list-inline contact mr-2 mb-2 ml-2">
                 <li class="list-inline-item mr-3">
@@ -64,6 +75,19 @@
         <div class="row px-5" v-if="!isLoading">
           <div class="col-8">
             <div class="card-calendar1 py-4 px-5">
+              <!-- Set success or errors messages -->
+              <div
+                class="mx-auto text-center pb-3 pt-2 alert alert-success clear"
+                v-if="success_message && countDown > 0"
+              >
+                {{ success_message }}
+              </div>
+              <div
+                class="mx-auto text-center pb-3 pt-2 alert alert-danger clear"
+                v-if="error && countDown > 0"
+              >
+                {{ error }}
+              </div>
               <div class="candidate-calendar">
                 <h5>Choose the period :</h5>
                 <!-- Calendar -->
@@ -171,18 +195,6 @@
                       :size="size"
                     ></clip-loader>
                   </div>
-                  <div
-                    class="mx-auto text-center pb-3 pt-2 alert alert-success clear"
-                    v-if="success_message && countDown > 0"
-                  >
-                    {{ success_message }}
-                  </div>
-                  <div
-                    class="mx-auto text-center pb-3 pt-2 alert alert-danger clear"
-                    v-if="error && countDown > 0"
-                  >
-                    {{ error }}
-                  </div>
                 </div>
               </div>
             </div>
@@ -207,13 +219,223 @@
       </div>
     </div>
   </section>
+  <!-- low sizes -->
+  <section class="pb-5 d-block d-md-none">
+    <div class="container-md pt-5">
+      <div class="profile pt-5">
+        <h2 class="text-left title mb-5 px-5">
+          <span class="icon" @click="goBack"
+            ><i class="fas fa-arrow-left mr-2"></i
+          ></span>
+          Candidate
+        </h2>
+        <!-- loading spinner -->
+        <div class="text-center py-3" v-if="isLoading">
+          <clip-loader
+            :loading="isLoading"
+            :color="color"
+            :size="size"
+          ></clip-loader>
+        </div>
+        <div class="d-block candidate-info-wrapper" v-if="!isLoading">
+          <div
+            class="d-flex align-items-start justify-content-between align-items-center pb-3 px-3 candidate-info pb-4"
+          >
+            <div class="candidate-image">
+              <!-- candidate Image -->
+              <img
+                :src="
+                  'http://localhost:8000/storage/candidates_images/' +
+                    candidate.id +
+                    '/' +
+                    candidate.candidate_image
+                "
+                :alt="'candidate ' + candidate.id + ' profile image'"
+                class="d-block img-fluid img-profile mb-4"
+              />
+            </div>
+            <div class="candidate-description">
+              <h4 class="name">
+                {{ candidate.label }}
+              </h4>
+              <ul class="list-inline contact mr-2 mb-2 ml-2">
+                <li class="list-inline-item mr-3">
+                  <i class="fas fa-calendar-alt mr-2"></i> 2 ans d'experience
+                </li>
+              </ul>
+              <p class="ml-2 mb-2">
+                <span class="d-inline-block rating">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                </span>
+                <span class="d-inline-block ml-2 rating-avis">
+                  ( 20 avis )
+                </span>
+              </p>
+              <p class="ml-2"><span class="mr-2">4</span>missions active</p>
+            </div>
+          </div>
+        </div>
+        <div class="row px-5" v-if="!isLoading">
+          <div class="col-12 pl-0 pr-0">
+            <div class="card-calendar2 card-calendar2-small h-100 pt-4">
+              <div class="candidate-skills">
+                <h5>Candidate Skills :</h5>
+                <ul class="list-inline py-4 mb-0">
+                  <li
+                    class="list-inline-item mr-2 mb-3"
+                    v-for="skill in candidate.skills"
+                    :key="skill.id"
+                  >
+                    <span class="skill px-3 py-1">{{ skill.name }}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 px-0 pb-4">
+            <div class="card-calendar1 pb-4">
+              <!-- Set success or errors messages -->
+              <div
+                class="mx-auto text-center pb-3 pt-2 alert alert-success clear"
+                v-if="success_message && countDown > 0"
+              >
+                {{ success_message }}
+              </div>
+              <div
+                class="mx-auto text-center pb-3 pt-2 alert alert-danger clear"
+                v-if="error && countDown > 0"
+              >
+                {{ error }}
+              </div>
+              <div class="candidate-calendar">
+                <h5>Choose the period :</h5>
+                <!-- Calendar -->
+                <div
+                  class="calendar mx-auto pt-4 pb-2 d-flex justify-content-center align-items-center"
+                >
+                  <v-date-picker
+                    v-model="range"
+                    is-range
+                    is-dark
+                    is-expanded
+                    :color="calendarColor"
+                    :model-config="modelConfig"
+                    :attributes="attributes"
+                    :min-date="new Date()"
+                    :disabled-dates="disabledDates"
+                  />
+                </div>
+                <!-- Calendar keys -->
+                <div class="d-block calendar-keys">
+                  <ul class="list-inline pl-3">
+                    <li class="list-inline-item">
+                      <span class="d-inline-block square"></span>
+                    </li>
+                    <li class="list-inline-item">
+                      <span class="ml-3">The range dates is already taken</span>
+                    </li>
+                  </ul>
+                </div>
+                <!-- Range Error -->
+                <div class="d-block" v-if="validationForRange">
+                  <span
+                    class="d-block range-error"
+                    v-for="(error, index) in rangeErrors"
+                    :key="index"
+                  >
+                    {{ error }}
+                  </span>
+                </div>
+                <div class="mission-description mt-4">
+                  <h5>Mission Description :</h5>
+                  <div class="form-group pt-3 pl-3">
+                    <label for="description"
+                      >write the mission description here</label
+                    >
+                    <textarea
+                      class="form-control"
+                      :class="validationForDescription"
+                      id="description"
+                      rows="3"
+                      v-model="description"
+                      placeholder="mission's description"
+                    ></textarea>
+                    <!-- If the errors is empty -->
+                    <div v-if="!validationDescription" class="valid-feedback">
+                      Looks good!
+                    </div>
+                    <!-- If the errors is full -->
+                    <div v-if="validationDescription" class="invalid-feedback">
+                      <span
+                        class="d-block"
+                        v-for="(error, index) in descriptionErrors"
+                        :key="index"
+                      >
+                        {{ error }}
+                      </span>
+                    </div>
+                  </div>
+                  <!-- input file -->
+                  <div class="form-group pl-3">
+                    <label for="description">Join File :</label>
+                    <div class="input-group mb-3">
+                      <div class="custom-file">
+                        <input
+                          type="file"
+                          class="custom-file-input"
+                          id="inputGroupFile01"
+                          aria-describedby="inputGroupFileAddon01"
+                          @change="uploadFile"
+                          accept=".pdf,.doc,.txt"
+                        />
+                        />
+                        <label class="custom-file-label" for="inputGroupFile01"
+                          >Choose file</label
+                        >
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="float-right pb-3 pt-2">
+                    <button
+                      class="btn btn-success btn-hire"
+                      @click.prevent="hireProfile"
+                    >
+                      Hire Profile
+                    </button>
+                  </div>
+                  <div
+                    class="mx-auto text-center pb-3 pt-2 clear"
+                    v-if="isLoadingData"
+                  >
+                    <clip-loader
+                      :loading="isLoadingData"
+                      :color="color"
+                      :size="size"
+                    ></clip-loader>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <Footer />
 </template>
 
 <script>
 import ClipLoader from "vue-spinner/src/ClipLoader.vue";
+import Footer from "../components/layout/Footer.vue";
 export default {
   components: {
     ClipLoader,
+    Footer,
   },
   data() {
     return {
@@ -294,6 +516,9 @@ export default {
         disableDates.push(disableDate);
       });
       return disableDates;
+    },
+    client() {
+      return this.$store.getters.getActifClient;
     },
     client_id() {
       const client = this.$store.getters.getActifClient;
@@ -386,6 +611,14 @@ export default {
         this.isLoadingData = false;
         return;
       }
+      /**
+       *  if the client is null
+       */
+      if (this.client == null) {
+        this.isLoadingData = false;
+        this.error = "You must login before hire a profile";
+        return;
+      }
 
       const missionDetail = new FormData();
 
@@ -416,6 +649,10 @@ export default {
           this.error = "Something wrong, Please try again";
           this.countDownTimer();
         });
+    },
+    makeContract() {
+      const id = this.$route.params.id;
+      this.$router.push("contract/" + id);
     },
   },
   created() {
@@ -472,6 +709,9 @@ section {
   background-color: #fff;
   border-left: 1px solid #e0e0e0;
 }
+.card-calendar2-small {
+  border-left: 0px solid #e0e0e0;
+}
 .card-calendar1 {
   background-color: #fff;
 }
@@ -494,7 +734,7 @@ section {
   font-weight: 600;
 }
 .btn-hire {
-  background-color: #14a800;
+  background-color: #1dbf73;
   color: #fff;
   font-weight: bold;
   border-radius: 40px;
@@ -508,6 +748,9 @@ section {
   padding: 15px;
   cursor: pointer;
   font-size: 1.2rem;
+}
+.btn-hire:hover {
+  background-color: #19a463;
 }
 .btn-like:hover {
   background-color: #14a800;

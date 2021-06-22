@@ -4,8 +4,8 @@
       <div class="first-header mt-0">
         <ul class="list-inline">
           <li class="list-inline-item header-logo">
-            <a href="#">
-              <img src="@/assets/icon.png" class="img-fluid" />
+            <a href="#" @click.prevent="returnHome">
+              <h1 class="logo-text">Recruit <span>.</span></h1>
             </a>
           </li>
           <ul
@@ -444,6 +444,121 @@
       </div>
     </transition>
   </header>
+  <!-- Visible on low sizes -->
+  <header class="d-block d-md-none">
+    <div class="container-md mx-0 px-0">
+      <div class="first-header">
+        <div class="logo-header w-100">
+          <div class="row">
+            <div class="col-3 p-0"></div>
+            <div class="col-6 p-0 text-center">
+              <a href="#">
+                <h1 class="logo-text">Recruit <span>.</span></h1>
+              </a>
+            </div>
+            <div class="col-3 p-0"></div>
+          </div>
+        </div>
+        <div class="first-header-menu">
+          <!-- Si le client n'est pas connecter -->
+          <div class="d-flex justify-content-around mt-3" v-if="!loggedClient">
+            <div class="">
+              <a href="#" class="join" @click="show = true">
+                Join
+              </a>
+            </div>
+          </div>
+
+          <!-- Si le client est connecter -->
+          <div class="d-flex justify-content-center mt-3" v-if="loggedClient">
+            <div class="visit-profil-client mx-3">
+              <a href="#" class="" @click.prevent="visitProfile">
+                <img
+                  :src="
+                    'http://localhost:8000/storage/clientImages/' +
+                      client.id +
+                      '/' +
+                      client.client_image
+                  "
+                  :alt="'client ' + client.id + ' profile image'"
+                  class="d-block img-fluid"
+                />
+              </a>
+            </div>
+            <div class="logout-client mx-3">
+              <a href="#" class="" @click.prevent="logoutClient">
+                <i class="fas fa-sign-out-alt"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NavBar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light px-0 py-3 pl-3">
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="container">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="#"
+                >how it works <span class="sr-only">(current)</span></a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#"
+                >how to recruit <span class="sr-only">(current)</span></a
+              >
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/browse"
+                >browse profiles
+                <span class="sr-only">(current)</span></router-link
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#"
+                >Contact us <span class="sr-only">(current)</span></a
+              >
+            </li>
+          </ul>
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item px-3">
+              <ul class="list-inline">
+                <li class="list-inline-item social-media-item">
+                  <a href="">
+                    <i class="fab fa-facebook-f mr-2"></i>
+                  </a>
+                </li>
+                <li class="list-inline-item social-media-item">
+                  <a href="">
+                    <i class="fab fa-instagram mr-2"></i>
+                  </a>
+                </li>
+                <li class="list-inline-item social-media-item">
+                  <a href="">
+                    <i class="fab fa-twitter mr-2"></i>
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
 </template>
 
 <script>
@@ -496,7 +611,7 @@ export default {
     },
   },
   computed: {
-    client(){
+    client() {
       return this.$store.getters.getActifClient;
     },
     /* computed methods for validation */
@@ -770,6 +885,9 @@ export default {
       this.showConfirmModal = false;
       this.show = false;
     },
+    returnHome(){
+      this.$router.push("/home");
+    },
   },
   created() {},
 };
@@ -779,6 +897,20 @@ export default {
 @font-face {
   font-family: "Helvetica ";
   src: url("~@/assets/fonts/PragmaticaMedium.otf") format("otf");
+}
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@900&display=swap");
+a:hover{
+  text-decoration: none;
+}
+h1.logo-text {
+  font-family: "Nunito", sans-serif;
+  font-size: 30px;
+  color: #404145;
+}
+.logo-text span {
+  color: #1dbf73;
+  font-weight: bold;
+  font-size: 40px;
 }
 header {
   background-color: #fff;

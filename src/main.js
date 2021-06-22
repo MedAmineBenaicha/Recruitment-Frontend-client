@@ -5,6 +5,7 @@ import store from './store/index';
 import VCalendar from "v-calendar";
 import VueFinalModal from "vue-final-modal";
 import axios from "axios";
+//import 'expose?$!expose?jQuery!jquery'
 
 // logout if unauthorized user
 axios.interceptors.response.use(
@@ -27,6 +28,7 @@ axios.interceptors.response.use(
 
 // Import Bootstrap an BootstrapVue CSS files (order is important)
 import "bootstrap/dist/css/bootstrap.css";
+import 'bootstrap/dist/js/bootstrap.js'
 // Use v-calendar & v-date-picker components
 
 createApp(App)

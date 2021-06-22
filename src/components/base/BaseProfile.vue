@@ -1,5 +1,5 @@
 <template>
-  <div class="profile-card">
+  <div class="profile-card h-100">
     <div class="profile-card-content px-4 ">
       <ul class="list-inline pb-4 pt-3">
         <li class="lixt-inline-item float-left">
@@ -19,7 +19,7 @@
       />
       <h4 class="text-center">
         <a href="#" class="profile-name">{{
-          candidate.first_name + " " + candidate.last_name
+          candidate.label
         }}</a>
       </h4>
       <span class="d-block mt-3 text-center work"

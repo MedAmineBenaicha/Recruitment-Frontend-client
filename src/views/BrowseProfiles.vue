@@ -1,6 +1,6 @@
 <template>
-  <section>
-    <div class="container py-5">
+  <section class="">
+    <div class="container-md py-5">
       <!-- Search & filter Bar -->
       <div class="search mx-auto mb-5 s003">
         <form>
@@ -71,7 +71,12 @@
               </div>
             </div>
             <div class="input-field second-wrap">
-              <input id="search" type="text" placeholder="Enter Keywords?" />
+              <input
+                id="search"
+                type="text"
+                placeholder="Enter Keywords?"
+                v-model="search"
+              />
             </div>
             <div class="input-field third-wrap">
               <button class="btn-search" type="button">
@@ -103,42 +108,55 @@
             :size="size"
           ></clip-loader>
         </div>
-        <div
-          class="col-4 mt-5"
-          v-for="candidate in displayCandidates"
-          :key="candidate.id"
-        >
-          <base-profile
-            :actifCandidate="candidate"
-            :skills="candidate.skills"
-            v-if="!isLoadingData"
-          ></base-profile>
-        </div>
-        <!-- Pagination -->
-        <div class="col-12 mt-5 d-flex justify-content-center">
-          <pagination
-            v-model="page"
-            :records="records"
-            :per-page="perPage"
-            text=""
-            theme="bootstrap4"
-          />
+        <div class="col-12">
+          <div class="row" v-if="displayCandidates.length!=0">
+            <div
+              class="col-12 col-sm-6 col-md-6 col-lg-4 mt-5"
+              v-for="candidate in displayCandidates"
+              :key="candidate.id"
+            >
+              <base-profile
+                :actifCandidate="candidate"
+                :skills="candidate.skills"
+                v-if="!isLoadingData"
+              ></base-profile>
+            </div>
+            <!-- Pagination -->
+            <div class="col-12 mt-5 d-flex justify-content-center">
+              <pagination
+                v-model="page"
+                :records="records"
+                :per-page="perPage"
+                text=""
+                theme="bootstrap4"
+              />
+            </div>
+          </div>
+          <div class="row" v-if="!displayCandidates.length!=0 && search!=null">
+            <div class="col-12 mx-auto py-4">
+              <div class="alert alert-warning py-3 text-center alert-message">
+                There is no candidate matches your search
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    {{ selectedSkills }}
   </section>
+  <Footer/>
 </template>
 
 <script>
 import BaseProfile from "../components/base/BaseProfile";
 import ClipLoader from "vue-spinner/src/ClipLoader.vue";
 import Pagination from "v-pagination-3";
+import Footer from '../components/layout/Footer.vue'
 export default {
   components: {
     BaseProfile,
     ClipLoader,
     Pagination,
+    Footer,
   },
   data() {
     return {
@@ -150,7 +168,8 @@ export default {
       /* data for filter by category */
       selectedCategories: [],
       // attention
-      selectedSkills: [[],[],[],[]],
+      selectedSkills: [[], [], [], []],
+      search: null,
     };
   },
   computed: {
@@ -158,7 +177,17 @@ export default {
       return this.isOpen;
     },
     candidates() {
-      return this.$store.getters.getCandidates;
+      const candidates = this.$store.getters.getCandidates;
+      const activeCandidates = [];
+      candidates.forEach((candidate) => {
+        if(candidate.contract_status == 0){
+          console.log('oui')
+          activeCandidates.push(candidate);
+        }else{
+          console.log('none')
+        }
+      });
+      return activeCandidates;
     },
     categories() {
       const categories = this.$store.getters.getCategories;
@@ -170,7 +199,7 @@ export default {
       return this.$store.getters.getCandidates.length;
     },
     displayCandidates() {
-      const candidates = this.$store.getters.getCandidates;
+      const candidates = this.candidates;
       const categories = this.categories;
       const startIndex = this.perPage * (this.page - 1);
       const endIndex = startIndex + this.perPage;
@@ -199,9 +228,29 @@ export default {
           }
         });
       } else {
-        filtredCandidates = candidates;
+        if (this.search == null) {
+          filtredCandidates = candidates;
+        } else {
+          let searchedCandidates = [];
+          console.log(candidates);
+          searchedCandidates = candidates.filter((candidate) => {
+            return (
+              candidate.label.match(this.search) ||
+              candidate.label.toLowerCase().match(this.search) ||
+              candidate.label.toLowerCase().match(this.search.toLowerCase())
+            );
+          });
+          return searchedCandidates.slice(startIndex, endIndex);
+        }
       }
       return filtredCandidates.slice(startIndex, endIndex);
+    },
+    searchedCandidates() {
+      const candidates = this.$store.getters.getCandidates;
+      if (this.search == null) return this.displayCandidates;
+      return candidates.filter((candidate) => {
+        return candidate.label.match(this.search);
+      });
     },
   },
   methods: {
@@ -292,6 +341,10 @@ section {
 }
 .skill-checkbox {
   color: cadetblue;
+}
+.alert-message{
+  font-weight: 600;
+  box-shadow: 0px 8px 20px 0px rgba(0, 0, 0, 0.15);
 }
 
 /* Forms

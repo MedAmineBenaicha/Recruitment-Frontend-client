@@ -16,6 +16,7 @@
     "core-js": "^3.6.5",
     "jquery": "^3.6.0",
     "node-sass": "^6.0.0",
+    "owl.carousel": "^2.3.4",
     "popper.js": "^1.16.1",
     "sass-loader": "^10.1.1",
     "v-calendar": "^3.0.0-alpha.4",
@@ -27,6 +28,7 @@
     "vue-slick-carousel": "^1.0.6",
     "vue-spinner": "^1.0.4",
     "vue-star-rating": "^2.1.0",
+    "vue3-carousel": "^0.1.21",
     "vuelendar": "^1.0.0",
     "vuex": "^4.0.0-0",
     "vuex-persist": "^3.1.3"
@@ -41,6 +43,7 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^7.0.0",
+    "expose-loader": "^3.0.0",
     "sass": "^1.32.13",
     "webpack": "^4.0.0"
   }

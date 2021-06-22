@@ -307,7 +307,7 @@
                         >{{ statusName[mission.mission_status] }}
                       </li>
                       <li
-                        class="list-inline-item px-3"
+                        class="list-inline-item px-3 d-none d-lg-block"
                         v-if="mission.mission_status == 2"
                       >
                         <span class="d-inline-block rating">
@@ -319,7 +319,7 @@
                         </span>
                       </li>
                       <li
-                        class="list-inline-item px-3"
+                        class="list-inline-item px-3 d-none d-lg-block"
                         style="width:136.417px"
                         v-if="mission.mission_status != 2"
                       >
@@ -389,15 +389,18 @@
       </div>
     </div>
   </section>
+  <Footer/>
 </template>
 
 <script>
 import ClipLoader from "vue-spinner/src/ClipLoader.vue";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
+import Footer from '../components/layout/Footer.vue'
 export default {
   components: {
     ClipLoader,
-    PulseLoader
+    PulseLoader,
+    Footer
   },
   data() {
     return {

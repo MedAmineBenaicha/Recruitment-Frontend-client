@@ -2,12 +2,17 @@ import { createRouter, createWebHistory } from "vue-router";
 import Home from "../views/Home.vue";
 import BrowseProfiles from "../views/BrowseProfiles";
 import CandidateProfile from "../views/CandidateProfile";
+import CandidateContract from "../views/CandidateContract";
 import ClientProfile from "../views/ClientProfile";
 import Error from "../views/Error";
 
 //import store from '../store/index'
 
 const routes = [
+  {
+    path: "/",
+    redirect: '/home'
+  },
   {
     path: "/home",
     name: "Home",
@@ -29,6 +34,14 @@ const routes = [
     path: "/browse/candidate/:id",
     name: "candidateProfile",
     component: CandidateProfile,
+    meta: {
+      guest: true,
+    },
+  },
+  {
+    path: "/browse/candidate/contract/:id",
+    name: "candidateContract",
+    component: CandidateContract,
     meta: {
       guest: true,
     },
