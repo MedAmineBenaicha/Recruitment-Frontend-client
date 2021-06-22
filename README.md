@@ -1,4 +1,4 @@
-#INSTALLATION GUIDE
+##INSTALLATION GUIDE
 ## Clone GitHub repo for this project locally
 Find a location on your computer where you want to store the project, and run the following command, which will pull the project from github and create a copy of it on your local computer
 
