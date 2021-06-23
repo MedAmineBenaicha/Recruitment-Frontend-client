@@ -32,9 +32,9 @@
           v-for="(skill, index) in skills"
           :key="skill.id"
         >
-          <span class="skill px-3 py-1" v-if="index < 3">{{ skill.name }}</span>
-          <span class="skill-over px-3 py-1" v-if="index == 3"
-            >+{{ skills.length - 3 }}</span
+          <span class="skill px-3 py-1" v-if="index < 2">{{ skill.name }}</span>
+          <span class="skill-over px-3 py-1" v-if="index == 2"
+            >+{{ skills.length - 2 }}</span
           >
         </li>
       </ul>

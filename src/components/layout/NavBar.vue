@@ -20,9 +20,79 @@
             </li>
 
             <!-- Si le client est connecte  -->
+
+            <!--Notifications of mission and contracts -->
             <li class="list-inline-item" v-if="loggedClient">
-              <div class="visit-profil-client">
-                <a href="#" class="" @click.prevent="visitProfile">
+              <div class="dropdown show">
+                <div
+                  class="notification d-inline-block dropdown-toggle"
+                  role="button"
+                  id="notificationsDropdown"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <div
+                    class="active-notifications"
+                    v-if="notifications.length != 0"
+                  ></div>
+                  <i class="far fa-bell"></i>
+                </div>
+
+                <div
+                  class="dropdown-menu"
+                  aria-labelledby="notificationsDropdown"
+                  v-if="notifications.length != 0"
+                >
+                  <div class="dropdown-item notification-header">
+                    <h4 class="py-2 mb-0">Notifications</h4>
+                  </div>
+                  <a
+                    href="#"
+                    v-for="(notification, index) in notifications"
+                    :key="index"
+                    class="dropdown-item"
+                    @click.prevent="visitMission(notification.mission_id)"
+                    :class="
+                      notification.data.mission_status == 1
+                        ? 'color-success'
+                        : 'color-danger'
+                    "
+                  >
+                    Your mission is
+                    {{
+                      notification.data.mission_status == 1
+                        ? "confirmed"
+                        : "refused"
+                    }}
+                  </a>
+                </div>
+                <!-- No notifications -->
+                <div
+                  class="dropdown-menu mt-2"
+                  aria-labelledby="notificationsDropdown"
+                  v-if="notifications.length == 0"
+                >
+                  <div class="dropdown-item notification-header">
+                    <h4>Notifications</h4>
+                  </div>
+                  <span class="dropdown-item"
+                    >there is no notifications ...</span
+                  >
+                </div>
+              </div>
+            </li>
+
+            <li class="list-inline-item" v-if="loggedClient">
+              <div class="dropdown show">
+                <div
+                  class="visit-profil-client dropdown-toggle menu-client-dropdown"
+                  role="button"
+                  id="clientMenu"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
                   <img
                     :src="
                       'http://localhost:8000/storage/clientImages/' +
@@ -33,7 +103,31 @@
                     :alt="'client ' + client.id + ' profile image'"
                     class="d-block img-fluid"
                   />
-                </a>
+                </div>
+
+                <div
+                  class="dropdown-menu client-menu"
+                  aria-labelledby="clientMenu"
+                >
+                  <a
+                    class="dropdown-item"
+                    href="#"
+                    @click.prevent="visitProfile"
+                    >Profil</a
+                  >
+                  <a
+                    class="dropdown-item"
+                    href="#"
+                    @click.prevent="showMissions"
+                    >Missions</a
+                  >
+                  <a
+                    class="dropdown-item"
+                    href="#"
+                    @click.prevent="showContracts"
+                    >Contracts</a
+                  >
+                </div>
               </div>
             </li>
 
@@ -592,6 +686,7 @@ export default {
       validationForEmail: null,
       validationForPassword: null,
       validationForPhoneNumber: null,
+      notifCounter: 0,
     };
   },
   watch: {
@@ -638,6 +733,9 @@ export default {
     },
     loggedClient() {
       return this.$store.getters.getClientStatus;
+    },
+    notifications() {
+      return this.$store.getters.getUnreadNotifications;
     },
   },
   methods: {
@@ -885,11 +983,30 @@ export default {
       this.showConfirmModal = false;
       this.show = false;
     },
-    returnHome(){
+    returnHome() {
       this.$router.push("/home");
     },
+    showMissions() {
+      this.$router.push("/clients/"+ this.client.id +"/missions");
+    },
+    showContracts() {
+      this.$router.push("/clients/"+ this.client.id +"/contracts");
+    },
+    /**
+     *  Get unread Notifications
+     */
+    getUnreadNotifications() {
+      this.intervalid = setInterval(
+        function() {
+          this.$store.dispatch("getUnreadNotifications");
+        }.bind(this),
+        10000
+      );
+    },
   },
-  created() {},
+  created() {
+    this.getUnreadNotifications();
+  },
 };
 </script>
 
@@ -899,7 +1016,7 @@ export default {
   src: url("~@/assets/fonts/PragmaticaMedium.otf") format("otf");
 }
 @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@900&display=swap");
-a:hover{
+a:hover {
   text-decoration: none;
 }
 h1.logo-text {
@@ -1103,5 +1220,70 @@ hr {
 }
 .register-link span {
   color: #3dad45;
+}
+
+/** Notifications */
+.notification {
+  padding: 5px 10px;
+  background-color: #fff;
+  color: #44566d;
+  font-size: 1.1rem;
+  position: relative;
+}
+.unread-notification {
+  position: absolute;
+  top: -20%;
+  right: -30%;
+  border-radius: 15px;
+  color: #fff;
+  background-color: #44566d;
+  font-size: 12px;
+}
+.dropdown-menu.show {
+  display: block;
+  border-radius: 0px;
+  padding-top: 0px;
+  top: -5px;
+  left: -370% !important;
+}
+.client-menu.show {
+  top: 8px !important;
+  left: -100% !important;
+}
+.notification-header {
+  color: #fff;
+  background-color: #44566d;
+}
+.notification-header:hover {
+  color: #fff;
+  background-color: #44566d;
+}
+
+.notification-header h4 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.color-notification {
+  color: #0eb40e;
+  font-weight: 600;
+}
+.active-notifications {
+  position: absolute;
+  top: 5%;
+  right: 35%;
+  color: red;
+  background-color: #dd0d0d;
+  width: 8px;
+  height: 8px;
+  border-radius: 100%;
+}
+.color-success {
+  color: #078c33;
+}
+.color-danger {
+  color: #d00c0c;
+}
+.menu-client-dropdown::after {
+  content: none;
 }
 </style>

@@ -36,11 +36,16 @@ export default createStore({
     /**
      *  Contracts
      */
-     contracts_type: [],
-      /**
-       *  Front end counter
-       */
+    contracts_type: [],
+    /**
+     *  Front end counter
+     */
     counter: 1,
+    notifications: [],
+    /**
+     *  Client Missions
+     */
+    client_missions: [],
   },
   plugins: [vuexLocal.plugin],
   mutations: {
@@ -67,12 +72,18 @@ export default createStore({
     SAVE_CANIDATE(state, payload) {
       state.candidate = payload;
     },
-    SAVE_CATEGORIES(state,payload){
+    SAVE_CATEGORIES(state, payload) {
       state.categories = payload;
     },
-    SAVE_CONTRACTS_TYPE(state,payload){
+    SAVE_CONTRACTS_TYPE(state, payload) {
       state.contracts_type = payload;
     },
+    SET_UNREAD_NOTIFICATIONS(state, payload) {
+      state.notifications = payload;
+    },
+    SET_CLIENT_MISSIONS(state,payload){
+      state.client_missions = payload;
+    }
   },
   actions: {
     /**
@@ -221,25 +232,25 @@ export default createStore({
       });
     },
     /**
-   *  Load Contracts types From Api
-   */
-  loadContractsType({ commit, getters }) {
-    return new Promise((resolve, reject) => {
-      axios.defaults.headers.common["Accept"] = "application/json";
-      axios.defaults.headers.common["Authorization"] =
-        "Bearer " + getters.getToken;
-      axios
-        .get("http://localhost:8000/api/contractstype")
-        .then((result) => {
-          resolve(result);
-          commit("SAVE_CONTRACTS_TYPE", result.data);
-        })
-        .catch((error) => {
-          reject(error);
-          console.log(error.message);
-        });
-    });
-  },
+     *  Load Contracts types From Api
+     */
+    loadContractsType({ commit, getters }) {
+      return new Promise((resolve, reject) => {
+        axios.defaults.headers.common["Accept"] = "application/json";
+        axios.defaults.headers.common["Authorization"] =
+          "Bearer " + getters.getToken;
+        axios
+          .get("http://localhost:8000/api/contractstype")
+          .then((result) => {
+            resolve(result);
+            commit("SAVE_CONTRACTS_TYPE", result.data);
+          })
+          .catch((error) => {
+            reject(error);
+            console.log(error.message);
+          });
+      });
+    },
     updateClient({ dispatch, getters }, payload) {
       console.log("actioooons");
       return new Promise((resolve, reject) => {
@@ -343,13 +354,43 @@ export default createStore({
           });
       });
     },
+
+    // Get Unread Notification
+    getUnreadNotifications({ commit, getters }) {
+      console.log("notif2...");
+      axios.defaults.headers.common["Accept"] = "application/json";
+      axios.defaults.headers.common["Authorization"] =
+        "Bearer " + getters.getToken;
+      axios
+        .get("http://localhost:8000/api/client/notifications")
+        .then((response) => {
+          commit("SET_UNREAD_NOTIFICATIONS", response.data);
+        })
+        .catch((error) => {
+          console.log("status : " + error.response);
+        });
+    },
+
+    // Get Client Missions
+    getCLientMissions({ commit, getters },payload) {
+      axios.defaults.headers.common["Accept"] = "application/json";
+      axios.defaults.headers.common["Authorization"] =
+        "Bearer " + getters.getToken;
+      axios
+        .get("http://localhost:8000/api/clients/"+payload.client_id+"/missions")
+        .then((response) => {
+          commit("SET_CLIENT_MISSIONS", response.data);
+        })
+        .catch((error) => {
+          console.log("status : " + error.response);
+        });
+    },
   },
   getters: {
     /**
      *  Client
      */
     getToken(state) {
-      console.log(state.access_token);
       return state.access_token;
     },
     getClientStatus(state) {
@@ -367,11 +408,17 @@ export default createStore({
     getCategories(state) {
       return state.categories;
     },
-    getContractsType(state){
+    getContractsType(state) {
       return state.contracts_type;
     },
-    getCounter(state){
+    getCounter(state) {
       return state.counter;
+    },
+    getUnreadNotifications(state) {
+      return state.notifications;
+    },
+    getClientMissions(state){
+      return state.client_missions;
     }
   },
 

@@ -4,6 +4,9 @@ import BrowseProfiles from "../views/BrowseProfiles";
 import CandidateProfile from "../views/CandidateProfile";
 import CandidateContract from "../views/CandidateContract";
 import ClientProfile from "../views/ClientProfile";
+import ClientMissions from "../views/ClientMissions";
+import RateMission from "../views/RateMission";
+import ClientContracts from "../views/ClientContracts";
 import Error from "../views/Error";
 
 //import store from '../store/index'
@@ -11,7 +14,7 @@ import Error from "../views/Error";
 const routes = [
   {
     path: "/",
-    redirect: '/home'
+    redirect: "/home",
   },
   {
     path: "/home",
@@ -50,9 +53,33 @@ const routes = [
     path: "/profile",
     name: "ClientProfile",
     component: ClientProfile,
-    meta:{
+    meta: {
       requiresAuth: true,
-    }
+    },
+  },
+  {
+    path: "/clients/:id/missions",
+    name: "ClientMissions",
+    component: ClientMissions,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: "/clients/:id/missions/:mission_id/rate",
+    name: "RateMission",
+    component: RateMission,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: "/clients/:id/contracts",
+    name: "ClientContracts",
+    component: ClientContracts,
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: "/error",
@@ -80,7 +107,7 @@ router.beforeEach((to, from, next) => {
         path: "/error",
         params: { nextUrl: to.fullPath },
       });
-    }else{
+    } else {
       next();
     }
   } else {

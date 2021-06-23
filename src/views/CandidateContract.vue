@@ -20,6 +20,19 @@
         <div class="row px-5" v-if="!isLoading">
           <div class="col-12 px-0">
             <div class="card-calendar1 py-4 px-0 px-md-5">
+              <!-- Succes and error messages -->
+              <div
+                class="mx-auto text-center pb-3 pt-2 alert alert-success clear"
+                v-if="success_message && countDown > 0"
+              >
+                {{ success_message }}
+              </div>
+              <div
+                class="mx-auto text-center pb-3 pt-2 alert alert-danger clear"
+                v-if="error && countDown > 0"
+              >
+                {{ error }}
+              </div>
               <div class="candidate-calendar">
                 <!-- choose contract type -->
                 <div class="mission-description mt-4 d-none d-md-block">
@@ -115,7 +128,7 @@
                   </div>
                 </div>
                 <h5 v-if="selected != null">
-                  Choose the period : {{ startDate }}
+                  Choose the period :
                 </h5>
                 <!-- Calendar for range date-->
                 <div
@@ -248,18 +261,6 @@
                     :color="color"
                     :size="size"
                   ></clip-loader>
-                </div>
-                <div
-                  class="mx-auto text-center pb-3 pt-2 alert alert-success clear"
-                  v-if="success_message && countDown > 0"
-                >
-                  {{ success_message }}
-                </div>
-                <div
-                  class="mx-auto text-center pb-3 pt-2 alert alert-danger clear"
-                  v-if="error && countDown > 0"
-                >
-                  {{ error }}
                 </div>
               </div>
             </div>

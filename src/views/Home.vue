@@ -542,7 +542,7 @@ export default defineComponent({
           }
           counter++;
         }.bind(this),
-        8000
+        5000
       );
     },
   },
