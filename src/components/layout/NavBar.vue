@@ -23,7 +23,7 @@
 
             <!--Notifications of mission and contracts -->
             <li class="list-inline-item" v-if="loggedClient">
-              <div class="dropdown show">
+              <div class="dropdown show" v-if="notifications!=null">
                 <div
                   class="notification d-inline-block dropdown-toggle"
                   role="button"
@@ -52,7 +52,7 @@
                     v-for="(notification, index) in notifications"
                     :key="index"
                     class="dropdown-item"
-                    @click.prevent="visitMission(notification.mission_id)"
+                    @click.prevent="showMissions"
                     :class="
                       notification.data.mission_status == 1
                         ? 'color-success'
@@ -998,7 +998,8 @@ export default {
     getUnreadNotifications() {
       this.intervalid = setInterval(
         function() {
-          this.$store.dispatch("getUnreadNotifications");
+            const client_id = this.client.id;
+            this.$store.dispatch("getUnreadNotifications",client_id);
         }.bind(this),
         10000
       );

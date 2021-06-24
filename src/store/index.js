@@ -356,15 +356,30 @@ export default createStore({
     },
 
     // Get Unread Notification
-    getUnreadNotifications({ commit, getters }) {
+    getUnreadNotifications({ commit, getters },payload) {
       console.log("notif2...");
       axios.defaults.headers.common["Accept"] = "application/json";
       axios.defaults.headers.common["Authorization"] =
         "Bearer " + getters.getToken;
       axios
-        .get("http://localhost:8000/api/client/notifications")
+        .get("http://localhost:8000/api/client/notifications/"+payload)
         .then((response) => {
           commit("SET_UNREAD_NOTIFICATIONS", response.data);
+        })
+        .catch((error) => {
+          console.log("status : " + error.response);
+        });
+    },
+
+    // Mark notifications as read
+    markNotificationsAsRead({ commit, getters },payload) {
+      axios.defaults.headers.common["Accept"] = "application/json";
+      axios.defaults.headers.common["Authorization"] =
+        "Bearer " + getters.getToken;
+      axios
+        .get("http://localhost:8000/api/clients/"+payload+"/notifications/markasread")
+        .then(() => {
+          commit("SET_UNREAD_NOTIFICATIONS", []);
         })
         .catch((error) => {
           console.log("status : " + error.response);
@@ -384,6 +399,45 @@ export default createStore({
         .catch((error) => {
           console.log("status : " + error.response);
         });
+    },
+
+    // Rate Mission
+    rateMission({getters},payload){
+      return new Promise((resolve, reject) => {
+        axios.defaults.headers.common["Accept"] = "application/json";
+        axios.defaults.headers.common["Authorization"] =
+          "Bearer " + getters.getToken;
+        axios
+          .post("http://localhost:8000/api/rating", payload)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            console.log("Rating error : " + error.response);
+            reject(error);
+          });
+      });
+    },
+
+    // Update Mission Rating Status
+    updateMissionRatingStatus({ getters }, payload) {
+      return new Promise((resolve, reject) => {
+        axios.defaults.headers.common["Accept"] = "application/json";
+        axios.defaults.headers.common["Authorization"] =
+          "Bearer " + getters.getToken;
+        const apiUpdateRoute =
+          "http://localhost:8000/api/missions/" +
+          payload.id
+        axios
+          .post(apiUpdateRoute, payload.mission)
+          .then((res) => {
+            resolve(res);
+          })
+          .catch((error) => {
+            console.log(error);
+            reject(error);
+          });
+      });
     },
   },
   getters: {
