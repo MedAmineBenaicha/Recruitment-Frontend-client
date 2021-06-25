@@ -7,6 +7,8 @@ import ClientProfile from "../views/ClientProfile";
 import ClientMissions from "../views/ClientMissions";
 import RateMission from "../views/RateMission";
 import ClientContracts from "../views/ClientContracts";
+import ForgotPassword from "../views/Client/ForgotPassword";
+import ResetPassword from "../views/Client/ResetPassword";
 import Error from "../views/Error";
 
 //import store from '../store/index'
@@ -79,6 +81,22 @@ const routes = [
     component: ClientContracts,
     meta: {
       requiresAuth: true,
+    },
+  },
+  {
+    path: "/forgot-password",
+    name: "ForgotPassword",
+    component: ForgotPassword,
+    meta: {
+      guest: true,
+    },
+  },
+  {
+    path: "/password-reset/:email",
+    name: "ResetPassword",
+    component: ResetPassword,
+    meta: {
+      guest: true,
     },
   },
   {

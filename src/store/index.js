@@ -81,9 +81,9 @@ export default createStore({
     SET_UNREAD_NOTIFICATIONS(state, payload) {
       state.notifications = payload;
     },
-    SET_CLIENT_MISSIONS(state,payload){
+    SET_CLIENT_MISSIONS(state, payload) {
       state.client_missions = payload;
-    }
+    },
   },
   actions: {
     /**
@@ -122,6 +122,38 @@ export default createStore({
           .then((res) => {
             console.log("After Done axiosInstance");
             resolve(res);
+          })
+          .catch((error) => {
+            console.log(error);
+            reject(error);
+          });
+      });
+    },
+    /**
+     *  Reset Password Request
+     */
+    resetPasswordRequest(context, payload) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post("http://localhost:8000/api/reset-password-request", payload)
+          .then((result) => {
+            resolve(result);
+          })
+          .catch((error) => {
+            console.log(error);
+            reject(error);
+          });
+      });
+    },
+    /**
+     *  Reset Password with Email
+     */
+    resetPassword(context, payload) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post("http://localhost:8000/api/reset-password", payload)
+          .then((result) => {
+            resolve(result);
           })
           .catch((error) => {
             console.log(error);
@@ -356,13 +388,13 @@ export default createStore({
     },
 
     // Get Unread Notification
-    getUnreadNotifications({ commit, getters },payload) {
+    getUnreadNotifications({ commit, getters }, payload) {
       console.log("notif2...");
       axios.defaults.headers.common["Accept"] = "application/json";
       axios.defaults.headers.common["Authorization"] =
         "Bearer " + getters.getToken;
       axios
-        .get("http://localhost:8000/api/client/notifications/"+payload)
+        .get("http://localhost:8000/api/client/notifications/" + payload)
         .then((response) => {
           commit("SET_UNREAD_NOTIFICATIONS", response.data);
         })
@@ -372,12 +404,16 @@ export default createStore({
     },
 
     // Mark notifications as read
-    markNotificationsAsRead({ commit, getters },payload) {
+    markNotificationsAsRead({ commit, getters }, payload) {
       axios.defaults.headers.common["Accept"] = "application/json";
       axios.defaults.headers.common["Authorization"] =
         "Bearer " + getters.getToken;
       axios
-        .get("http://localhost:8000/api/clients/"+payload+"/notifications/markasread")
+        .get(
+          "http://localhost:8000/api/clients/" +
+            payload +
+            "/notifications/markasread"
+        )
         .then(() => {
           commit("SET_UNREAD_NOTIFICATIONS", []);
         })
@@ -387,12 +423,14 @@ export default createStore({
     },
 
     // Get Client Missions
-    getCLientMissions({ commit, getters },payload) {
+    getCLientMissions({ commit, getters }, payload) {
       axios.defaults.headers.common["Accept"] = "application/json";
       axios.defaults.headers.common["Authorization"] =
         "Bearer " + getters.getToken;
       axios
-        .get("http://localhost:8000/api/clients/"+payload.client_id+"/missions")
+        .get(
+          "http://localhost:8000/api/clients/" + payload.client_id + "/missions"
+        )
         .then((response) => {
           commit("SET_CLIENT_MISSIONS", response.data);
         })
@@ -402,7 +440,7 @@ export default createStore({
     },
 
     // Rate Mission
-    rateMission({getters},payload){
+    rateMission({ getters }, payload) {
       return new Promise((resolve, reject) => {
         axios.defaults.headers.common["Accept"] = "application/json";
         axios.defaults.headers.common["Authorization"] =
@@ -426,8 +464,7 @@ export default createStore({
         axios.defaults.headers.common["Authorization"] =
           "Bearer " + getters.getToken;
         const apiUpdateRoute =
-          "http://localhost:8000/api/missions/" +
-          payload.id
+          "http://localhost:8000/api/missions/" + payload.id;
         axios
           .post(apiUpdateRoute, payload.mission)
           .then((res) => {
@@ -471,9 +508,9 @@ export default createStore({
     getUnreadNotifications(state) {
       return state.notifications;
     },
-    getClientMissions(state){
+    getClientMissions(state) {
       return state.client_missions;
-    }
+    },
   },
 
   modules: {},

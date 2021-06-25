@@ -23,7 +23,7 @@
 
             <!--Notifications of mission and contracts -->
             <li class="list-inline-item" v-if="loggedClient">
-              <div class="dropdown show" v-if="notifications!=null">
+              <div class="dropdown show" v-if="notifications != null">
                 <div
                   class="notification d-inline-block dropdown-toggle"
                   role="button"
@@ -265,9 +265,9 @@
                     v-model="email"
                   />
                   <span class="d-block float-right">
-                    <a href="#" class="formConnexion-link mt-1"
-                      >Mot de Passe oublié ?</a
-                    >
+                    <a href="#" @click.prevent="forgotPasswordPage" class="formConnexion-link mt-1"
+                      >Forgot Password ?
+                    </a>
                   </span>
                   <!-- If the errors is empty -->
                   <div v-if="!validationEmail" class="valid-feedback">
@@ -871,7 +871,6 @@ export default {
        */
       if (this.emailErrors.length || this.passwordErrors.length) {
         this.isLoading = false;
-        this.success_message = "Client has been added succesfully";
         return;
       }
       this.$store
@@ -979,6 +978,10 @@ export default {
       this.freeForms();
       this.showRegister = false;
     },
+    forgotPasswordPage(){
+      this.closeModal();
+      this.$router.push("/forgot-password");
+    },
     confirm() {
       this.showConfirmModal = false;
       this.show = false;
@@ -987,10 +990,10 @@ export default {
       this.$router.push("/home");
     },
     showMissions() {
-      this.$router.push("/clients/"+ this.client.id +"/missions");
+      this.$router.push("/clients/" + this.client.id + "/missions");
     },
     showContracts() {
-      this.$router.push("/clients/"+ this.client.id +"/contracts");
+      this.$router.push("/clients/" + this.client.id + "/contracts");
     },
     /**
      *  Get unread Notifications
@@ -998,8 +1001,11 @@ export default {
     getUnreadNotifications() {
       this.intervalid = setInterval(
         function() {
+          if (this.client != null) {
+            console.log('jvnsdjk');
             const client_id = this.client.id;
-            this.$store.dispatch("getUnreadNotifications",client_id);
+            this.$store.dispatch("getUnreadNotifications", client_id);
+          }
         }.bind(this),
         10000
       );
