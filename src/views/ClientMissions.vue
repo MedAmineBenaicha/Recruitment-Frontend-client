@@ -334,6 +334,12 @@ export default {
         "/clients/" + client_id + "/missions/" + mission_id + "/rate"
       );
     },
+    payMission(mission_id){
+      const client_id = this.$route.params.id;
+      this.$router.push(
+        "/clients/" + client_id + "/missions/" + mission_id + "/payment"
+      );
+    },
     showRatingModal(mission_id) {
       this.show = true;
       this.mission_id = mission_id;

@@ -6,6 +6,7 @@ import CandidateContract from "../views/CandidateContract";
 import ClientProfile from "../views/ClientProfile";
 import ClientMissions from "../views/ClientMissions";
 import RateMission from "../views/RateMission";
+import PayMission from "../views/Client/PayMissions";
 import ClientContracts from "../views/ClientContracts";
 import ForgotPassword from "../views/Client/ForgotPassword";
 import ResetPassword from "../views/Client/ResetPassword";
@@ -71,6 +72,14 @@ const routes = [
     path: "/clients/:id/missions/:mission_id/rate",
     name: "RateMission",
     component: RateMission,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: "/clients/:client_id/missions/:mission_id/payment",
+    name: "PayMission",
+    component: PayMission,
     meta: {
       requiresAuth: true,
     },

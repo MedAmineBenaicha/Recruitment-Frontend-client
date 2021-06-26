@@ -46,6 +46,7 @@ export default createStore({
      *  Client Missions
      */
     client_missions: [],
+    client_mission: null,
   },
   plugins: [vuexLocal.plugin],
   mutations: {
@@ -83,6 +84,9 @@ export default createStore({
     },
     SET_CLIENT_MISSIONS(state, payload) {
       state.client_missions = payload;
+    },
+    SET_CLIENT_MISSION(state, payload) {
+      state.client_mission = payload;
     },
   },
   actions: {
@@ -439,6 +443,31 @@ export default createStore({
         });
     },
 
+    // Get Specific Mission to specific client
+    getMissionById({ commit, getters }, payload) {
+      return new Promise((resolve, reject) => {
+        axios.defaults.headers.common["Accept"] = "application/json";
+        axios.defaults.headers.common["Authorization"] =
+          "Bearer " + getters.getToken;
+        const apiRoute =
+          "http://localhost:8000/api/clients/" +
+          payload.client_id +
+          "/missions/" +
+          payload.mission_id;
+          console.log(apiRoute)
+        axios
+          .get(apiRoute)
+          .then((response) => {
+            commit("SET_CLIENT_MISSION", response.data);
+            resolve(response);
+          })
+          .catch((error) => {
+            console.log("status : " + error.response);
+            reject(error);
+          });
+      });
+    },
+
     // Rate Mission
     rateMission({ getters }, payload) {
       return new Promise((resolve, reject) => {
@@ -510,6 +539,9 @@ export default createStore({
     },
     getClientMissions(state) {
       return state.client_missions;
+    },
+    getClientMission(state) {
+      return state.client_mission;
     },
   },
 
