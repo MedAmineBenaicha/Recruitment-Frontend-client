@@ -47,6 +47,12 @@ export default createStore({
      */
     client_missions: [],
     client_mission: null,
+
+    /**
+     *  Client Contracts
+     */
+    client_contracts: [],
+    client_contract: null,
   },
   plugins: [vuexLocal.plugin],
   mutations: {
@@ -87,6 +93,9 @@ export default createStore({
     },
     SET_CLIENT_MISSION(state, payload) {
       state.client_mission = payload;
+    },
+    SET_CLIENT_CONTRACTS(state, payload) {
+      state.client_contracts = payload;
     },
   },
   actions: {
@@ -443,6 +452,27 @@ export default createStore({
         });
     },
 
+    // Get Client Contracts
+    getCLientContracts({ commit, getters }, payload) {
+      axios.defaults.headers.common["Accept"] = "application/json";
+      axios.defaults.headers.common["Authorization"] =
+        "Bearer " + getters.getToken;
+      axios
+        .get(
+          "http://localhost:8000/api/clients/" +
+            payload.client_id +
+            "/contracts"
+        )
+        .then((response) => {
+          console.log("data is :");
+          console.log(response.data);
+          commit("SET_CLIENT_CONTRACTS", response.data);
+        })
+        .catch((error) => {
+          console.log("status : " + error.response);
+        });
+    },
+
     // Get Specific Mission to specific client
     getMissionById({ commit, getters }, payload) {
       return new Promise((resolve, reject) => {
@@ -454,7 +484,7 @@ export default createStore({
           payload.client_id +
           "/missions/" +
           payload.mission_id;
-          console.log(apiRoute)
+        console.log(apiRoute);
         axios
           .get(apiRoute)
           .then((response) => {
@@ -486,8 +516,104 @@ export default createStore({
       });
     },
 
+    // Pay Mission
+    payMission({ getters }, payload) {
+      return new Promise((resolve, reject) => {
+        axios.defaults.headers.common["Accept"] = "application/json";
+        axios.defaults.headers.common["Authorization"] =
+          "Bearer " + getters.getToken;
+        axios
+          .post("http://localhost:8000/api/payment-mission", payload)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            console.log("Payment error : " + error.response);
+            reject(error);
+          });
+      });
+    },
+
+    // Rate Contract
+    rateContract({ getters }, payload) {
+      return new Promise((resolve, reject) => {
+        axios.defaults.headers.common["Accept"] = "application/json";
+        axios.defaults.headers.common["Authorization"] =
+          "Bearer " + getters.getToken;
+        axios
+          .post("http://localhost:8000/api/rating", payload)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            console.log("Rating error : " + error.response);
+            reject(error);
+          });
+      });
+    },
+
+    // Update Contract Rating Status
+    updateContractRatingStatus({ getters }, payload) {
+      return new Promise((resolve, reject) => {
+        axios.defaults.headers.common["Accept"] = "application/json";
+        axios.defaults.headers.common["Authorization"] =
+          "Bearer " + getters.getToken;
+        const apiUpdateRoute =
+          "http://localhost:8000/api/contracts/" + payload.id;
+        axios
+          .post(apiUpdateRoute, payload.mission)
+          .then((res) => {
+            resolve(res);
+          })
+          .catch((error) => {
+            console.log(error);
+            reject(error);
+          });
+      });
+    },
+
+    // // Update Mission Status == > in progress after payment Done
+    updateMissionStatus({ getters }, payload) {
+      return new Promise((resolve, reject) => {
+        axios.defaults.headers.common["Accept"] = "application/json";
+        axios.defaults.headers.common["Authorization"] =
+          "Bearer " + getters.getToken;
+        const apiUpdateRoute =
+          "http://localhost:8000/api/missions/" + payload.id;
+        axios
+          .post(apiUpdateRoute, payload.mission)
+          .then((res) => {
+            resolve(res);
+          })
+          .catch((error) => {
+            console.log(error);
+            reject(error);
+          });
+      });
+    },
+
     // Update Mission Rating Status
     updateMissionRatingStatus({ getters }, payload) {
+      return new Promise((resolve, reject) => {
+        axios.defaults.headers.common["Accept"] = "application/json";
+        axios.defaults.headers.common["Authorization"] =
+          "Bearer " + getters.getToken;
+        const apiUpdateRoute =
+          "http://localhost:8000/api/missions/" + payload.id;
+        axios
+          .post(apiUpdateRoute, payload.mission)
+          .then((res) => {
+            resolve(res);
+          })
+          .catch((error) => {
+            console.log(error);
+            reject(error);
+          });
+      });
+    },
+    
+    // Update Mission Payment Status
+    updateMissionPaymentStatus({ getters }, payload) {
       return new Promise((resolve, reject) => {
         axios.defaults.headers.common["Accept"] = "application/json";
         axios.defaults.headers.common["Authorization"] =
@@ -542,6 +668,11 @@ export default createStore({
     },
     getClientMission(state) {
       return state.client_mission;
+    },
+    getClientContracts(state) {
+      console.log("data from getter is :");
+      console.log(state.client_contracts);
+      return state.client_contracts;
     },
   },
 

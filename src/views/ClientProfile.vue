@@ -720,6 +720,10 @@ export default {
   border-radius: 100%;
   position: relative;
 }
+.profil-image img{
+  height: 150px;
+  width: 150px;
+}
 .profil-image-source,
 .profil-image-doctor {
   border-radius: 100%;

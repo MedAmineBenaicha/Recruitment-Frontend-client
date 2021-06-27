@@ -881,6 +881,7 @@ export default {
         .then(() => {
           this.isLoading = false;
           this.success_message = "Login done";
+          this.closeModal();
         })
         .catch((error) => {
           console.log(error);
@@ -934,6 +935,7 @@ export default {
           console.log("Registration Done");
           console.log(res.data);
           this.success_message = "Client has been added succesfully";
+          this.closeModal();
         })
         .catch((error) => {
           this.isLoading = false;
@@ -1067,6 +1069,8 @@ header {
 }
 .visit-profil-client img {
   border-radius: 100%;
+  width: 40px;
+  height: 40px;
 }
 .register {
   font-size: 14px;

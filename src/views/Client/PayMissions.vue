@@ -198,6 +198,7 @@
                       <button
                         type="button"
                         class="subscribe btn btn-primary btn-block shadow-sm"
+                        @click="payMission"
                       >
                         Confirm Payment
                       </button>
@@ -214,6 +215,74 @@
         </div>
       </div>
     </div>
+    <!-- Rate Mission Modal -->
+    <transition name="fade">
+      <div
+        v-if="show"
+        class="modal"
+        @click.self="closeModal"
+        id="RateModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="exampleModalLabel"
+        :class="show ? 'show' : ''"
+        :style="
+          show
+            ? 'display:block; padding:17px; background-color:rgba(0,0,0,.65)'
+            : 'display:none'
+        "
+        :aria-hidden="show ? '' : 'true'"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header pb-0">
+              <h5 class="modal-title text-center mb-3">
+                Payment In Progress
+              </h5>
+              <button
+                type="button"
+                class="close btn-close"
+                data-dismiss="modal"
+                aria-label="Close"
+                @click="closeModal"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body mx-1 pt-0 px-3 py-3">
+              <!-- loading spinner -->
+              <div class="col-12 mx-auto pb-3" v-if="isLoadingPayment">
+                <clip-loader
+                  :loading="isLoadingPayment"
+                  :color="color"
+                  :size="size"
+                ></clip-loader>
+              </div>
+              <!-- Pay Mission -->
+              <div class="payment-done-wrapper w-100" v-if="!isLoadingPayment">
+                <div class="payment-done text-center">
+                  <i class="far fa-check-circle"></i>
+                </div>
+                <h4 class="text-center mt-2">Payment Done</h4>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <ul class="list-inline">
+                <li class="list-inline-item float-right">
+                  <button
+                    class="btn btn-success btn-details py-1"
+                    @click.prevent="donePayment"
+                  >
+                    <i class="fas fa-info-circle mr-2"></i>
+                    Done
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
   </section>
   <Footer />
 </template>
@@ -231,7 +300,18 @@ export default {
     return {
       isLoading: false,
       showPaymentProcess: false,
+      show: false,
+      isLoadingPayment: false,
     };
+  },
+  watch: {
+    show() {
+      if (this.show) {
+        document.body.classList.add("modal-open");
+      } else {
+        document.body.classList.remove("modal-open");
+      }
+    },
   },
   computed: {
     mission() {
@@ -275,6 +355,85 @@ export default {
           this.isLoading = false;
           console.log(error.message);
         });
+    },
+    showPaymentProcessModal() {
+      this.show = true;
+    },
+    closeModal() {
+      this.show = false;
+    },
+    getCLientMissions() {
+      const id = this.$route.params.id;
+      this.$store
+        .dispatch("getCLientMissions", { client_id: id })
+        .then(() => {})
+        .catch(() => {});
+    },
+    payMission() {
+      this.isLoadingPayment = true;
+      this.show = true;
+      const mission_id = this.mission.id;
+      const paymentData = new FormData();
+      paymentData.append("mission_id", mission_id);
+      paymentData.append("amount", this.payment);
+      this.$store
+        .dispatch("payMission", paymentData)
+        .then(() => {
+          this.updateMissionPaymentStatus();
+        })
+        .catch((error) => {
+          this.isLoadingPayment = false;
+          console.log(error.message);
+        });
+    },
+    updateMissionPaymentStatus() {
+      const status = 1;
+      const mission_id = this.mission.id;
+      const updatedMission = new FormData();
+      updatedMission.append("mission_payment_status", status);
+      updatedMission.append("_method", "PUT");
+
+      this.$store
+        .dispatch("updateMissionPaymentStatus", {
+          id: mission_id,
+          mission: updatedMission,
+        })
+        .then(() => {
+          this.updateMissionStatus();
+        })
+        .catch((error) => {
+          this.isLoadingPayment = false;
+          console.log(error.message);
+          this.error = "The payment process failed";
+        });
+    },
+    updateMissionStatus() {
+      const status = 2;
+      const mission_id = this.mission.id;
+      const updatedMission = new FormData();
+      updatedMission.append("mission_status", status);
+      updatedMission.append("_method", "PUT");
+
+      this.$store
+        .dispatch("updateMissionStatus", {
+          id: mission_id,
+          mission: updatedMission,
+        })
+        .then(() => {
+          this.isLoadingPayment = false;
+          this.success = "Missions's Payed successfully !!!";
+          this.getCLientMissions();
+        })
+        .catch((error) => {
+          this.isLoadingPayment = false;
+          console.log(error.message);
+          this.error = "The payment process failed";
+        });
+    },
+    donePayment() {
+      const client_id = this.$route.params.client_id;
+      this.closeModal();
+      this.$router.push("/clients/" + client_id + "/missions");
     },
   },
   created() {
@@ -357,7 +516,22 @@ input[type="radio"] {
   background-color: #1dbf73;
   border-color: #1e7e34;
 }
-.payment-choice-list{
-    border: 1px solid #d2d5d7;
+.payment-choice-list {
+  border: 1px solid #d2d5d7;
+}
+/** Payment Modal */
+.modal-title {
+  font-weight: 600;
+  text-transform: lowercase;
+  color: #434d49;
+}
+.payment-done {
+  font-size: 5rem;
+  color: #18a865;
+}
+.payment-done-wrapper h4 {
+  font-weight: 550;
+  color: #134672;
+  margin-top: 1rem;
 }
 </style>

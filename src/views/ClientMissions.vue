@@ -4,11 +4,7 @@
       <div class="row">
         <!-- loading spinner -->
         <div class="col-12 mx-auto py-4" v-if="isLoadingMissions">
-          <clip-loader
-            :loading="isLoadingMissions"
-            :color="color"
-            :size="size"
-          ></clip-loader>
+          <clip-loader :loading="isLoadingMissions"></clip-loader>
         </div>
         <div
           class="col-12 col-sm-6 col-md-4 mb-4 mission-wrapper"
@@ -57,7 +53,10 @@
                 <div class="mission-details">
                   <!-- payment button -->
                   <button
-                    v-if="mission.mission_status == 1"
+                    v-if="
+                      mission.mission_status == 1 &&
+                        mission.mission_payment_status == 0
+                    "
                     class="btn btn-info btn-details py-1"
                     @click.prevent="payMission(mission.id)"
                   >
@@ -67,7 +66,8 @@
                   <!-- rate button -->
                   <button
                     v-if="
-                      mission.mission_status == 2 &&
+                      mission.mission_payment_status == 1 &&
+                        mission.mission_status == 3 &&
                         mission.mission_rating_status != 1
                     "
                     class="btn btn-success btn-details py-1"
@@ -79,7 +79,7 @@
                   <p
                     class="ml-2 mb-2"
                     v-if="
-                      mission.mission_status == 2 &&
+                      mission.mission_status == 3 &&
                         mission.mission_rating_status == 1
                     "
                   >
@@ -304,27 +304,31 @@ export default {
           this.isLoadingMissions = false;
         });
     },
-    missionStatus(status) {
-      switch (status) {
+    missionStatus(status){
+      switch (status){
         case 0:
           return "pending";
         case 1:
-          return "en cours";
+          return "p-payment";
         case 2:
-          return "completed";
+          return "In progress";
         case 3:
+          return "completed";
+        case 4:
           return "refused";
       }
     },
-    getBadge(status) {
-      switch (status) {
+    getBadge(status){
+      switch (status){
         case 0:
           return "badge-secondary";
         case 1:
           return "badge-warning";
         case 2:
-          return "badge-success";
+          return "badge-primary";
         case 3:
+          return "badge-success";
+        case 4:
           return "badge-danger";
       }
     },
@@ -334,7 +338,7 @@ export default {
         "/clients/" + client_id + "/missions/" + mission_id + "/rate"
       );
     },
-    payMission(mission_id){
+    payMission(mission_id) {
       const client_id = this.$route.params.id;
       this.$router.push(
         "/clients/" + client_id + "/missions/" + mission_id + "/payment"
@@ -463,9 +467,8 @@ section {
   -webkit-animation: fade 2s linear;
   animation: fade 2s linear;
 }
-.mission-card:hover{
+.mission-card:hover {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.18);
-
 }
 /* .mission-card:hover {
   background-color: #0f0f2d;
