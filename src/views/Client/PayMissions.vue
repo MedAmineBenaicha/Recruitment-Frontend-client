@@ -129,9 +129,32 @@
                         type="text"
                         name="username"
                         placeholder="Card Owner Name"
+                        :class="validationForCardOwner"
+                        id="card_owner"
+                        v-model="card_owner"
                         required
                         class="form-control "
                       />
+                      <!-- If the errors is empty -->
+                      <div
+                        v-if="!validationForCardOwner"
+                        class="valid-feedback"
+                      >
+                        Looks good!
+                      </div>
+                      <!-- If the errors is full -->
+                      <div
+                        v-if="validationForCardOwner"
+                        class="invalid-feedback"
+                      >
+                        <span
+                          class="d-block"
+                          v-for="(error, index) in CardOwnerErrors"
+                          :key="index"
+                        >
+                          {{ error }}
+                        </span>
+                      </div>
                     </div>
                     <div class="form-group">
                       <label for="cardNumber">
@@ -142,14 +165,38 @@
                           type="text"
                           name="cardNumber"
                           placeholder="Valid card number"
+                          :class="validationForCardNumber"
+                          id="card_number"
+                          v-model="card_number"
                           class="form-control "
                           required
                         />
+
                         <div class="input-group-append">
                           <span class="input-group-text text-muted">
                             <i class="fab fa-cc-visa mx-1"></i>
                             <i class="fab fa-cc-mastercard mx-1"></i>
                             <i class="fab fa-cc-amex mx-1"></i>
+                          </span>
+                        </div>
+                        <!-- If the errors is empty -->
+                        <div
+                          v-if="!validationForCardNumber"
+                          class="valid-feedback"
+                        >
+                          Looks good!
+                        </div>
+                        <!-- If the errors is full -->
+                        <div
+                          v-if="validationForCardNumber"
+                          class="invalid-feedback"
+                        >
+                          <span
+                            class="d-block"
+                            v-for="(error, index) in CardNumberErrors"
+                            :key="index"
+                          >
+                            {{ error }}
                           </span>
                         </div>
                       </div>
@@ -166,6 +213,9 @@
                             <input
                               type="number"
                               placeholder="MM"
+                              :class="validationForMonth"
+                              id="date_month"
+                              v-model="date_month"
                               name=""
                               class="form-control"
                               required
@@ -173,10 +223,53 @@
                             <input
                               type="number"
                               placeholder="YY"
+                              :class="validationForYear"
+                              id="date_year"
+                              v-model="date_year"
                               name=""
                               class="form-control"
                               required
                             />
+                            <!-- If the errors is empty -->
+                            <div
+                              v-if="!validationForYear"
+                              class="valid-feedback"
+                            >
+                              Looks good!
+                            </div>
+                            <!-- If the errors is full -->
+                            <div
+                              v-if="validationForYear"
+                              class="invalid-feedback"
+                            >
+                              <span
+                                class="d-block"
+                                v-for="(error, index) in DateYearErrors"
+                                :key="index"
+                              >
+                                {{ error }}
+                              </span>
+                            </div>
+                            <!-- If the errors is empty -->
+                            <div
+                              v-if="!validationForMonth"
+                              class="valid-feedback"
+                            >
+                              Looks good!
+                            </div>
+                            <!-- If the errors is full -->
+                            <div
+                              v-if="validationForMonth"
+                              class="invalid-feedback"
+                            >
+                              <span
+                                class="d-block"
+                                v-for="(error, index) in DateMonthErrors"
+                                :key="index"
+                              >
+                                {{ error }}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -190,7 +283,28 @@
                               CVV <i class="fa fa-question-circle d-inline"></i>
                             </h6>
                           </label>
-                          <input type="text" required class="form-control" />
+                          <input
+                            type="text"
+                            required
+                            class="form-control"
+                            :class="validationForCVV"
+                            id="cvv"
+                            v-model="cvv"
+                          />
+                          <!-- If the errors is empty -->
+                          <div v-if="!validationForCVV" class="valid-feedback">
+                            Looks good!
+                          </div>
+                          <!-- If the errors is full -->
+                          <div v-if="validationForCVV" class="invalid-feedback">
+                            <span
+                              class="d-block"
+                              v-for="(error, index) in CVVErrors"
+                              :key="index"
+                            >
+                              {{ error }}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -302,6 +416,17 @@ export default {
       showPaymentProcess: false,
       show: false,
       isLoadingPayment: false,
+      /* data for validation */
+      CardOwnerErrors: [],
+      CardNumberErrors: [],
+      DateMonthErrors: [],
+      DateYearErrors: [],
+      CVVErrors: [],
+      validationForCardOwner: null,
+      validationForCardNumber: null,
+      validationForMonth: null,
+      validationForYear: null,
+      validationForCVV: null,
     };
   },
   watch: {
@@ -314,6 +439,22 @@ export default {
     },
   },
   computed: {
+    /* computed methods for validation */
+    validationCardOwner() {
+      return this.CardOwnerErrors.length ? true : false;
+    },
+    validationCardNumber() {
+      return this.CardNumberErrors.length ? true : false;
+    },
+    validationDateMonth() {
+      return this.DateMonthErrors.length ? true : false;
+    },
+    validationDateYear() {
+      return this.DateYearErrors.length ? true : false;
+    },
+    validationCVV() {
+      return this.CVVErrors.length ? true : false;
+    },
     mission() {
       return this.$store.getters.getClientMission;
     },
@@ -331,6 +472,112 @@ export default {
     },
   },
   methods: {
+    /*
+     **
+     *  Method to validate Card Owner Name
+     */
+    validCardOwner: function() {
+      console.log("valid Card Owner Name ? ");
+      this.CardOwnerErrors = [];
+
+      if (!this.card_owner) {
+        this.CardOwnerErrors.push("Card Owner Name should not be empty");
+      } else {
+        if (this.card_owner.length < 4) {
+          this.CardOwnerErrors.push(
+            "Card Owner Name must be more than 4 characters"
+          );
+        }
+      }
+
+      this.validationForCardOwner = this.CardOwnerErrors.length
+        ? "is-invalid"
+        : "is-valid";
+    },
+
+    /*
+     **
+     *  Method to validate Card number Name
+     */
+    validCardNumber: function() {
+      console.log("valid card number ? ");
+      this.CardNumberErrors = [];
+
+      if (!this.card_number) {
+        this.CardNumberErrors.push("Card Number should not be empty");
+      } else {
+        if (this.card_number.length != 16) {
+          this.CardNumberErrors.push("Card Number must be 16 numbers");
+        }
+        if (isNaN(this.card_number)) {
+          this.CardNumberErrors.push("Card Number contains only numbers");
+        }
+      }
+
+      this.validationForCardNumber = this.CardNumberErrors.length
+        ? "is-invalid"
+        : "is-valid";
+    },
+
+    /*
+     **
+     *  Method to validate date month
+     */
+    validDateMonth: function() {
+      console.log("valid date month ? ");
+      this.DateMonthErrors = [];
+
+      if (!this.date_month) {
+        this.DateMonthErrors.push("Month should not be empty");
+      } else {
+        if (this.date_month.length != 2) {
+          this.DateMonthErrors.push("Month must be 2 numbers");
+        }
+      }
+
+      this.validationForMonth = this.DateMonthErrors.length
+        ? "is-invalid"
+        : "is-valid";
+    },
+
+    /*
+     **
+     *  Method to validate date year
+     */
+    validDateYear: function() {
+      console.log("valid date year ? ");
+      this.DateYearErrors = [];
+
+      if (!this.date_year) {
+        this.DateYearErrors.push("Year should not be empty");
+      } else {
+        if (this.date_year.length != 2) {
+          this.DateYearErrors.push("Year must be 2 numbers");
+        }
+      }
+
+      this.validationForYear = this.DateYearErrors.length
+        ? "is-invalid"
+        : "is-valid";
+    },
+    /*
+     **
+     *  Method to validate date year
+     */
+    validCVV: function() {
+      console.log("valid date year ? ");
+      this.CVVErrors = [];
+
+      if (!this.cvv) {
+        this.CVVErrors.push("CVV should not be empty");
+      } else {
+        if (this.cvv.length != 3) {
+          this.CVVErrors.push("CVV must be 3 numbers");
+        }
+      }
+
+      this.validationForCVV = this.CVVErrors.length ? "is-invalid" : "is-valid";
+    },
     differenceBetweenTwoDates(start_date, end_date) {
       var diff = Math.floor(
         (Date.parse(end_date) - Date.parse(start_date)) / 86400000
@@ -371,6 +618,30 @@ export default {
     },
     payMission() {
       this.isLoadingPayment = true;
+      this.show = false;
+
+      /**
+       *  Call the validation methods Before send data to backend
+       */
+      this.validCardOwner();
+      this.validCardNumber();
+      this.validDateMonth();
+      this.validDateYear();
+      this.validCVV();
+
+      /**
+       *    Return if the errors is here
+       */
+      if (
+        this.CardOwnerErrors.length ||
+        this.CardNumberErrors.length ||
+        this.DateMonthErrors.length ||
+        this.DateYearErrors.length ||
+        this.CVVErrors.length
+      ) {
+        this.isLoadingPayment = false;
+        return;
+      }
       this.show = true;
       const mission_id = this.mission.id;
       const paymentData = new FormData();
@@ -412,6 +683,7 @@ export default {
       const mission_id = this.mission.id;
       const updatedMission = new FormData();
       updatedMission.append("mission_status", status);
+      updatedMission.append("payment_amount", this.payment);
       updatedMission.append("_method", "PUT");
 
       this.$store
@@ -421,7 +693,7 @@ export default {
         })
         .then(() => {
           this.isLoadingPayment = false;
-          this.success = "Missions's Payed successfully !!!";
+          this.success = "Missions's Payed successfully ! ";
           this.getCLientMissions();
         })
         .catch((error) => {

@@ -53,6 +53,12 @@ export default createStore({
      */
     client_contracts: [],
     client_contract: null,
+    /**
+     *  Chat Data
+     */
+    chatRooms: [],
+    currentRoom: null,
+    messages: [],
   },
   plugins: [vuexLocal.plugin],
   mutations: {
@@ -97,6 +103,16 @@ export default createStore({
     SET_CLIENT_CONTRACTS(state, payload) {
       state.client_contracts = payload;
     },
+    SET_CLIENT_CONTRACT(state, payload) {
+      state.client_contract = payload;
+    },
+    SET_CHAT_DATA(state,payload){
+      state.chatRooms = payload;
+      state.currentRoom = payload[0];
+    },
+    SET_CHAT_MESSAGES(state,payload){
+      state.messages = payload;
+    }
   },
   actions: {
     /**
@@ -402,7 +418,6 @@ export default createStore({
 
     // Get Unread Notification
     getUnreadNotifications({ commit, getters }, payload) {
-      console.log("notif2...");
       axios.defaults.headers.common["Accept"] = "application/json";
       axios.defaults.headers.common["Authorization"] =
         "Bearer " + getters.getToken;
@@ -534,6 +549,49 @@ export default createStore({
       });
     },
 
+    // Get Specific Contract to specific client
+    getContractById({ commit, getters }, payload) {
+      return new Promise((resolve, reject) => {
+        axios.defaults.headers.common["Accept"] = "application/json";
+        axios.defaults.headers.common["Authorization"] =
+          "Bearer " + getters.getToken;
+        const apiRoute =
+          "http://localhost:8000/api/clients/" +
+          payload.client_id +
+          "/contracts/" +
+          payload.contract_id;
+        console.log(apiRoute);
+        axios
+          .get(apiRoute)
+          .then((response) => {
+            commit("SET_CLIENT_CONTRACT", response.data);
+            resolve(response);
+          })
+          .catch((error) => {
+            console.log("status : " + error.response);
+            reject(error);
+          });
+      });
+    },
+
+    // Pay Contract
+    payContract({ getters }, payload) {
+      return new Promise((resolve, reject) => {
+        axios.defaults.headers.common["Accept"] = "application/json";
+        axios.defaults.headers.common["Authorization"] =
+          "Bearer " + getters.getToken;
+        axios
+          .post("http://localhost:8000/api/payment-contract", payload)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            console.log("Payment error : " + error.response);
+            reject(error);
+          });
+      });
+    },
+
     // Rate Contract
     rateContract({ getters }, payload) {
       return new Promise((resolve, reject) => {
@@ -547,6 +605,26 @@ export default createStore({
           })
           .catch((error) => {
             console.log("Rating error : " + error.response);
+            reject(error);
+          });
+      });
+    },
+
+    // Update Contract Payment Status
+    updateContractPaymentStatus({ getters }, payload) {
+      return new Promise((resolve, reject) => {
+        axios.defaults.headers.common["Accept"] = "application/json";
+        axios.defaults.headers.common["Authorization"] =
+          "Bearer " + getters.getToken;
+        const apiUpdateRoute =
+          "http://localhost:8000/api/contracts/" + payload.id;
+        axios
+          .post(apiUpdateRoute, payload.mission)
+          .then((res) => {
+            resolve(res);
+          })
+          .catch((error) => {
+            console.log(error);
             reject(error);
           });
       });
@@ -611,7 +689,7 @@ export default createStore({
           });
       });
     },
-    
+
     // Update Mission Payment Status
     updateMissionPaymentStatus({ getters }, payload) {
       return new Promise((resolve, reject) => {
@@ -627,6 +705,71 @@ export default createStore({
           })
           .catch((error) => {
             console.log(error);
+            reject(error);
+          });
+      });
+    },
+
+    /**
+     *  Function for Chat
+     */
+    // get Rooms of Chat
+    getRooms({ commit,getters }) {
+      return new Promise((resolve, reject) => {
+        axios.defaults.headers.common["Accept"] = "application/json";
+        axios.defaults.headers.common["Authorization"] =
+          "Bearer " + getters.getToken;
+        axios
+          .get("http://localhost:8000/api/chat/rooms")
+          .then((result) => {
+            commit("SET_CHAT_DATA", result.data);
+            resolve(result);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+    //getMessages of current Room
+    getMessages({commit,getters }, payload) {
+      return new Promise((resolve, reject) => {
+        axios.defaults.headers.common["Accept"] = "application/json";
+        axios.defaults.headers.common["Authorization"] =
+          "Bearer " + getters.getToken;
+        axios
+          .get(
+            "http://localhost:8000/api/chat/rooms/" +
+              payload.room_id +
+              "/messages"
+          )
+          .then((result) => {
+            commit("SET_CHAT_MESSAGES", result.data);
+            resolve(result);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+
+    // Send Message
+    sendMessage({ getters }, payload) {
+      return new Promise((resolve, reject) => {
+        axios.defaults.headers.common["Accept"] = "application/json";
+        axios.defaults.headers.common["Authorization"] =
+          "Bearer " + getters.getToken;
+        axios
+          .post(
+            "http://localhost:8000/api/client/chat/rooms/" +
+              payload.room_id +
+              "/message",
+            payload.message
+          )
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            console.log("Message error : " + error.response);
             reject(error);
           });
       });
@@ -674,6 +817,17 @@ export default createStore({
       console.log(state.client_contracts);
       return state.client_contracts;
     },
+    getClientContract(state) {
+      console.log("data from getter is :");
+      console.log(state.client_contract);
+      return state.client_contract;
+    },
+    getCurrentRoom(state){
+      return state.currentRoom;
+    },
+    getMessages(state){
+      return state.messages;
+    }
   },
 
   modules: {},

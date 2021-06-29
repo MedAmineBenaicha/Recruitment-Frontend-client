@@ -7,6 +7,9 @@ import ClientProfile from "../views/ClientProfile";
 import ClientMissions from "../views/ClientMissions";
 import RateMission from "../views/RateMission";
 import PayMission from "../views/Client/PayMissions";
+//import RateContract from "../views/RateMission";
+import PayContract from "../views/Client/PayContracts";
+
 import ClientContracts from "../views/ClientContracts";
 import ForgotPassword from "../views/Client/ForgotPassword";
 import ResetPassword from "../views/Client/ResetPassword";
@@ -45,14 +48,6 @@ const routes = [
     },
   },
   {
-    path: "/browse/candidate/contract/:id",
-    name: "candidateContract",
-    component: CandidateContract,
-    meta: {
-      guest: true,
-    },
-  },
-  {
     path: "/profile",
     name: "ClientProfile",
     component: ClientProfile,
@@ -85,9 +80,33 @@ const routes = [
     },
   },
   {
+    path: "/browse/candidate/contract/:id",
+    name: "candidateContract",
+    component: CandidateContract,
+    meta: {
+      guest: true,
+    },
+  },
+  {
     path: "/clients/:id/contracts",
     name: "ClientContracts",
     component: ClientContracts,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  // {
+  //   path: "/clients/:id/contracts/:contract_id/rate",
+  //   name: "RateContract",
+  //   component: RateContract,
+  //   meta: {
+  //     requiresAuth: true,
+  //   },
+  // },
+  {
+    path: "/clients/:client_id/contracts/:contract_id/payment",
+    name: "PayContract",
+    component: PayContract,
     meta: {
       requiresAuth: true,
     },

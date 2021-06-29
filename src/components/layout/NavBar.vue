@@ -1004,9 +1004,10 @@ export default {
       this.intervalid = setInterval(
         function() {
           if (this.client != null) {
-            console.log('jvnsdjk');
             const client_id = this.client.id;
             this.$store.dispatch("getUnreadNotifications", client_id);
+          }else{
+            return;
           }
         }.bind(this),
         10000

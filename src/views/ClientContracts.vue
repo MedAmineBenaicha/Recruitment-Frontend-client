@@ -4,11 +4,7 @@
       <div class="row">
         <!-- loading spinner -->
         <div class="col-12 mx-auto py-4" v-if="isLoadingContracts">
-          <clip-loader
-            :loading="isLoadingContracts"
-            :color="color"
-            :size="size"
-          ></clip-loader>
+          <clip-loader :loading="isLoadingContracts"></clip-loader>
         </div>
         <div
           class="col-12 col-sm-6 col-md-4 mb-4 mission-wrapper"
@@ -57,7 +53,10 @@
                 <div class="mission-details">
                   <!-- payment button -->
                   <button
-                    v-if="contract.status == 1"
+                    v-if="
+                      contract.status == 1 &&
+                        contract.contract_payment_status == 0
+                    "
                     class="btn btn-info btn-details py-1"
                     @click.prevent="payContract(contract.id)"
                   >
@@ -67,7 +66,8 @@
                   <!-- rate button -->
                   <button
                     v-if="
-                      contract.status == 2 &&
+                      contract.contract_payment_status == 1 &&
+                        contract.status == 3 &&
                         contract.contract_rating_status != 1
                     "
                     class="btn btn-success btn-details py-1"
@@ -79,7 +79,7 @@
                   <p
                     class="ml-2 mb-2"
                     v-if="
-                      contract.status == 2 &&
+                      contract.status == 3 &&
                         contract.contract_rating_status == 1
                     "
                   >
@@ -159,7 +159,7 @@
                 :size="size"
               ></clip-loader>
             </div>
-            <!-- Rate Mission -->
+            <!-- Rate Contract -->
             <div class="">
               <div class="stars">
                 <label class="rate">
@@ -304,27 +304,31 @@ export default {
           this.isLoadingContracts = false;
         });
     },
-    contractStatus(status) {
-      switch (status) {
+    contractStatus(status){
+      switch (status){
         case 0:
           return "pending";
         case 1:
-          return "en cours";
+          return "p-payment";
         case 2:
-          return "completed";
+          return "In progress";
         case 3:
+          return "completed";
+        case 4:
           return "refused";
       }
     },
-    getBadge(status) {
-      switch (status) {
+    getBadge(status){
+      switch (status){
         case 0:
           return "badge-secondary";
         case 1:
           return "badge-warning";
         case 2:
-          return "badge-success";
+          return "badge-primary";
         case 3:
+          return "badge-success";
+        case 4:
           return "badge-danger";
       }
     },
@@ -332,6 +336,12 @@ export default {
       const client_id = this.$route.params.id;
       this.$router.push(
         "/clients/" + client_id + "/contracts/" + contract_id + "/rate"
+      );
+    },
+    payContract(contract_id) {
+      const client_id = this.$route.params.id;
+      this.$router.push(
+        "/clients/" + client_id + "/contracts/" + contract_id + "/payment"
       );
     },
     showRatingModal(contract_id) {
@@ -386,10 +396,8 @@ export default {
       this.$store.dispatch("markNotificationsAsRead", client_id);
     },
   },
-  created(){
-      this.getCLientContracts();
-  },
   mounted() {
+    this.getCLientContracts();
     this.markNotificationsAsRead();
     $(function() {
       $(document).on(
@@ -459,9 +467,8 @@ section {
   -webkit-animation: fade 2s linear;
   animation: fade 2s linear;
 }
-.mission-card:hover{
+.mission-card:hover {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.18);
-
 }
 /* .mission-card:hover {
   background-color: #0f0f2d;
@@ -662,4 +669,3 @@ body {
 	opacity: 1 !important;
 } */
 </style>
-
