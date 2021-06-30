@@ -2,8 +2,6 @@
   <!-- Chat message button -->
   <div
     class="chat-logo-container d-flex justify-content-center align-items-center chat_on"
-    @click="showPopUp"
-    v-if="!showChatPopUp"
   >
     <i class="fas fa-comment-alt d-inline-block"></i>
   </div>
@@ -16,9 +14,9 @@
       <div class="Messenger_messenger">
         <div class="Messenger_header messenger-header px-3">
           <h4 class="Messenger_prompt px-3">
-            How can we help you? {{ message }}
+            How can we help you?
           </h4>
-          <span class="chat_close_icon"
+          <span class="chat_close_icon" @click="showPopUp"
             ><i class="fa fa-window-close" aria-hidden="true"></i
           ></span>
         </div>
@@ -157,21 +155,18 @@ export default {
     connect() {
       console.log("testt");
       this.getMessages();
-      window.Echo.channel("chat1").listen(
-        "NewChatMessage",
-        (e) => {
-          console.log("lisssste");
-          console.log(e);
-          this.getMessages();
-        }
-      );
+      window.Echo.channel("chat1").listen("NewChatMessage", (e) => {
+        console.log("lisssste");
+        console.log(e);
+        this.getMessages();
+      });
     },
-    connectMessages(){
+    connectMessages() {
       this.intervalid = setInterval(
         function() {
           if (this.client != null) {
             this.getMessages();
-          }else{
+          } else {
             return;
           }
         }.bind(this),
@@ -200,6 +195,7 @@ export default {
         .dispatch("getMessages", { room_id: 1 })
         .then(() => {
           this.isLoadingMessages = false;
+          this.scrollToBottomWhenMessageIsReceived();
         })
         .catch((error) => {
           this.isLoadingMessages = false;
@@ -225,23 +221,30 @@ export default {
         })
         .catch(() => {});
     },
+    scrollToBottomWhenMessageIsReceived(){
+      console.log('xxx');
+      $(".Messages").stop().animate({ scrollTop: $(".Messages")[0].scrollHeight}, 1000);
+    }
   },
   created() {
     console.log("getRooms");
     this.getRooms();
   },
   mounted() {
-    //this.connect();
-    this.connectMessages();
+    this.connect();
+    //this.connectMessages();
     $(document).ready(function() {
       $(".chat_on").click(function() {
         $(".Layout").toggle();
+        $(".Messages").stop().animate({ scrollTop: $(".Messages")[0].scrollHeight}, 1000);
         $(".chat_on").hide(300);
+        $(".chat_on").removeClass("d-flex");
       });
 
       $(".chat_close_icon").click(function() {
         $(".Layout").hide();
         $(".chat_on").show(300);
+        $(".chat_on").addClass("d-flex");
       });
     });
   },
