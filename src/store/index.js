@@ -599,7 +599,7 @@ export default createStore({
         axios.defaults.headers.common["Authorization"] =
           "Bearer " + getters.getToken;
         axios
-          .post("http://localhost:8000/api/rating", payload)
+          .post("http://localhost:8000/api/contract-rating", payload)
           .then((response) => {
             resolve(response);
           })
@@ -619,7 +619,7 @@ export default createStore({
         const apiUpdateRoute =
           "http://localhost:8000/api/contracts/" + payload.id;
         axios
-          .post(apiUpdateRoute, payload.mission)
+          .post(apiUpdateRoute, payload.contract)
           .then((res) => {
             resolve(res);
           })
@@ -639,7 +639,7 @@ export default createStore({
         const apiUpdateRoute =
           "http://localhost:8000/api/contracts/" + payload.id;
         axios
-          .post(apiUpdateRoute, payload.mission)
+          .post(apiUpdateRoute, payload.contract)
           .then((res) => {
             resolve(res);
           })
@@ -660,6 +660,26 @@ export default createStore({
           "http://localhost:8000/api/missions/" + payload.id;
         axios
           .post(apiUpdateRoute, payload.mission)
+          .then((res) => {
+            resolve(res);
+          })
+          .catch((error) => {
+            console.log(error);
+            reject(error);
+          });
+      });
+    },
+
+    // // Update Mission Status == > in progress after payment Done
+    updateContractStatus({ getters }, payload) {
+      return new Promise((resolve, reject) => {
+        axios.defaults.headers.common["Accept"] = "application/json";
+        axios.defaults.headers.common["Authorization"] =
+          "Bearer " + getters.getToken;
+        const apiUpdateRoute =
+          "http://localhost:8000/api/contracts/" + payload.id;
+        axios
+          .post(apiUpdateRoute, payload.contract)
           .then((res) => {
             resolve(res);
           })
@@ -705,6 +725,48 @@ export default createStore({
           })
           .catch((error) => {
             console.log(error);
+            reject(error);
+          });
+      });
+    },
+
+    // Print Mission Invoice
+    printPaymentMissionInvoice({ getters }, payload) {
+      return new Promise((resolve, reject) => {
+        axios.defaults.headers.common["Accept"] = "application/json";
+        axios.defaults.headers.common["Authorization"] =
+          "Bearer " + getters.getToken;
+          console.log('printing')
+        const apiUpdateRoute =
+          "http://localhost:8000/api/client/print-mission-invoice";
+        axios
+          .post(apiUpdateRoute, payload)
+          .then((res) => {
+            console.log('printing 2')
+            resolve(res);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+
+    // Print Contract Invoice
+    printPaymentContractInvoice({ getters }, payload) {
+      return new Promise((resolve, reject) => {
+        axios.defaults.headers.common["Accept"] = "application/json";
+        axios.defaults.headers.common["Authorization"] =
+          "Bearer " + getters.getToken;
+          console.log('printing')
+        const apiUpdateRoute =
+          "http://localhost:8000/api/client/print-contract-invoice";
+        axios
+          .post(apiUpdateRoute, payload)
+          .then((res) => {
+            console.log('printing 2')
+            resolve(res);
+          })
+          .catch((error) => {
             reject(error);
           });
       });

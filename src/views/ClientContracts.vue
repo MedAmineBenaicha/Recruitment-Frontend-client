@@ -85,7 +85,7 @@
                   >
                     <span class="d-inline-block rating">
                       <i
-                        v-for="index in contract.rating.contract_rating"
+                        v-for="index in contract.rating_contract.contract_rating"
                         :key="index"
                         class="fas fa-star"
                       ></i>
@@ -93,7 +93,7 @@
                     <span class="d-inline-block no-rating">
                       <i
                         class="fas fa-star"
-                        v-for="index in 5 - contract.rating.contract_rating"
+                        v-for="index in 5 - contract.rating_contract.contract_rating"
                         :key="index"
                       ></i>
                     </span>
@@ -230,7 +230,7 @@
               <li class="list-inline-item float-right">
                 <button
                   class="btn btn-success btn-details py-1"
-                  @click.prevent="rateContract()"
+                  @click.prevent="rateContract"
                 >
                   <i class="fas fa-info-circle mr-2"></i>
                   Rate Contract

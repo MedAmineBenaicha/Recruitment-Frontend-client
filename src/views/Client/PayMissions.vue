@@ -385,10 +385,10 @@
                 <li class="list-inline-item float-right">
                   <button
                     class="btn btn-success btn-details py-1"
-                    @click.prevent="donePayment"
+                    @click.prevent="printPaymentMissionInvoice"
                   >
-                    <i class="fas fa-info-circle mr-2"></i>
-                    Done
+                    <i class="fas fa-print mr-2"></i>
+                    Print Invoice
                   </button>
                 </li>
               </ul>
@@ -706,6 +706,21 @@ export default {
       const client_id = this.$route.params.client_id;
       this.closeModal();
       this.$router.push("/clients/" + client_id + "/missions");
+    },
+    printPaymentMissionInvoice() {
+      const missionData = new FormData();
+      missionData.append("client_id", this.mission.client_id);
+      missionData.append("candidate_id", this.mission.candidate_id);
+      this.$store
+        .dispatch("printPaymentMissionInvoice", missionData)
+        .then(() => {
+          setTimeout(function(){
+            this.donePayment();
+          }, 3000);
+        })
+        .catch(() => {
+          this.error = "The print process failed";
+        });
     },
   },
   created() {
