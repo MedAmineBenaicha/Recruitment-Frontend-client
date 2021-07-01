@@ -485,6 +485,9 @@ export default {
       const colors = ["red"];
       let attributes = [];
       missions.forEach((mission) => {
+        if(mission.mission_status == 4){
+          return;
+        }
         const start_date = this.getDate(mission.start_date);
         const end_date = this.getDate(mission.end_date);
         let attribute = {
@@ -507,6 +510,9 @@ export default {
       const missions = candidate.missions;
       let disableDates = [];
       missions.forEach((mission) => {
+        if(mission.mission_status == 4){
+          return;
+        }
         const start_date = this.getDate(mission.start_date);
         const end_date = this.getDate(mission.end_date);
         let disableDate = {
