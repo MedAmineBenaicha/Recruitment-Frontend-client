@@ -32,6 +32,7 @@
               class="Input_field"
               placeholder="Send a message..."
               style="height: 20px;"
+              @keydown.enter.prevent="sendMessage"
               v-model="message"
             ></textarea>
             <button class="Input_button Input_button-emoji">
