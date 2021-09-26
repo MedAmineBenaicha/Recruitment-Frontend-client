@@ -2,16 +2,24 @@
 
   ## Specifications : 
   ```
-    The client owns a company where he has candidates (employees) who are classified by skills according to categories. So the client wants to borrow these candidates from other companies for a fixed period.
+   The client owns a company where he has candidates (employees) who are classified by skills according 
+      to categories. So the client wants to borrow these candidates from other companies for a fixed period.
 
-  So, as a developer, I was asked to create a web platform where companies can access and browse the different profiles as well as filter these profiles according to the desired categories. After choosing the candidate they want, they can hire him for a mission for a fixed period while respecting his schedule (a candidate can have several missions but he must complete the first before moving on to the next).
-  Once the assignment is accepted, the client must pay for that assignment before the candidate begins their work, and the client has the option to rate an assignment that has already been completed.
+  So, as a developer, I was asked to create a web platform where companies can access and browse 
+  the different profiles as well as filter these profiles according to the desired categories. 
+  After choosing the candidate they want, they can hire him for a mission for a fixed period while 
+  respecting his schedule (a candidate can have several missions but he must complete the first 
+  before moving on to the next).
+  Once the assignment is accepted, the client must pay for that assignment before the candidate begins 
+  their work, and the client has the option to rate an assignment that has already been completed.
 
   N.B: The work is done with the following technologies
   - Backend: Laravel Api
   - Frontend: Vue js - Nuxt Js - Html5 - Css3 - Bootstrap
 
-  At the end of the project we managed to achieve a great success with a well-made platform while respecting the specifications and making our client very satisfied with the result.
+  At the end of the project we managed to achieve a great success with a well-made platform while 
+  respecting the specifications and making our client very satisfied with the result.
+  
  ```
   
   ## Screenshots : 
